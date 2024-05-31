@@ -93,18 +93,14 @@ public class HibernateTest
 		EntityTransaction tx = em.getTransaction();
 		tx.begin();
 
+		List<Student> studentlist = em.createQuery("SELECT t.teachingGroup FROM Tutor AS t WHERE :subject MEMBER OF t.subjectsToTeach")
+				.setParameter("subject", em.find(Subject.class, 2))
+				.getResultList();
 
-		TypedQuery<Subject> subjectQuery = em.createQuery("select s from Subject s where lower(s.subjectName) = :subjectName", Subject.class);
-		subjectQuery.setParameter("subjectName", "science");
-		Subject subject = subjectQuery.getSingleResult();
-
-		var studentQuery = em.createQuery("select tg from Tutor t join t.teachingGroup tg where :subjectObject member of t.subjectsToTeach", Student.class);
-		studentQuery.setParameter("subjectObject", subject);
-
-		List<Student> students = studentQuery.getResultList();
-
-		for (Student student : students) {
-			System.out.println(student);
+		System.out.println("Students of teachers who teach science:");
+		for (Student student : studentlist)
+		{
+			System.out.println("Id: " + student.getId() + ". | Name: " +  student.getName());
 		}
 
 		tx.commit();
